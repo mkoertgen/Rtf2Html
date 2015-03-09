@@ -1,10 +1,12 @@
 ﻿// adapted from https://github.com/mmanela/MarkupConverter
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -12,7 +14,7 @@ namespace Rtf2Html
 {
     class XamlToHtmlConverter : IDisposable
     {
-        public bool AsFullDocument { get; set; }
+        private bool AsFullDocument { get; set; }
 
         private readonly ZipArchive _zip;
         private XmlTextReader _xamlReader;
@@ -346,13 +348,20 @@ namespace Rtf2Html
                     var imageUri = _xamlReader.GetAttribute("UriSource");
                     if (!String.IsNullOrWhiteSpace(imageUri))
                     {
+                        // check new image
                         if (!_htmlResult.Content.ContainsKey(imageUri))
                         {
                             var entryPath = String.Concat("Xaml/", imageUri).Replace("/./", "/");
                             var imageEntry = _zip.GetEntry(entryPath);
                             using (var stream = imageEntry.Open())
                             {
-                                _htmlResult.Content[imageUri] = ToByteArray(stream);
+                                var image = ToByteArray(stream);
+                                var identicalContent = _htmlResult.Content.FirstOrDefault(kvp => image.SequenceEqual(kvp.Value));
+                                var isIdentical = !default(KeyValuePair<string, byte[]>).Equals(identicalContent);
+                                if (isIdentical)
+                                    imageUri = identicalContent.Key;
+                                else
+                                    _htmlResult.Content[imageUri] = image;
                             }
                         }
 
