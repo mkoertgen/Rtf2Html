@@ -12,37 +12,45 @@ using System.Xml;
 
 namespace Rtf2Html
 {
-    class XamlToHtmlConverter : IDisposable
+    class XamlToHtmlConverter
     {
-        private bool AsFullDocument { get; set; }
-
-        private readonly ZipArchive _zip;
+        private ZipArchive _zip;
         private XmlTextReader _xamlReader;
         private HtmlResult _htmlResult;
+        private string _contentUriPrefix = String.Empty;
 
-        public XamlToHtmlConverter(Stream xamlPackageStream, bool asFullDocument = true)
+        public bool AsFullDocument { get; set; }
+
+        public string ContentUriPrefix
         {
-            if (xamlPackageStream == null) throw new ArgumentNullException("xamlPackageStream");
-            AsFullDocument = asFullDocument;
-            _zip = new ZipArchive(xamlPackageStream);
-        }
-
-        public void Dispose() { _zip.Dispose(); }
-
-        public HtmlResult ConvertXamlToHtml()
-        {
-            var entry = _zip.GetEntry(@"Xaml/Document.xaml");
-            using (var stream = entry.Open())
-            using (var reader = new StreamReader(stream))
+            get { return _contentUriPrefix; }
+            set
             {
-                var xaml = reader.ReadToEnd();
-                _htmlResult = new HtmlResult();
-                ConvertXamlToHtml(xaml);
-                return _htmlResult;
+                _contentUriPrefix = value ?? String.Empty;
+                if (!String.IsNullOrWhiteSpace(_contentUriPrefix) && !_contentUriPrefix.EndsWith("/"))
+                    _contentUriPrefix += "/";
             }
         }
 
-        void ConvertXamlToHtml(string xamlString)
+        public XamlToHtmlConverter() { AsFullDocument = true; }
+
+        public HtmlResult ConvertXamlToHtml(MemoryStream xamlPackageStream)
+        {
+            using (_zip = new ZipArchive(xamlPackageStream))
+            {
+                var entry = _zip.GetEntry(@"Xaml/Document.xaml");
+                using (var stream = entry.Open())
+                using (var reader = new StreamReader(stream))
+                {
+                    var xaml = reader.ReadToEnd();
+                    _htmlResult = new HtmlResult();
+                    ConvertXamlToHtml(xaml);
+                    return _htmlResult;
+                }
+            }
+        }
+
+        private void ConvertXamlToHtml(string xamlString)
         {
             var safeXaml = WrapIntoFlowDocument(xamlString);
 
@@ -84,6 +92,9 @@ namespace Rtf2Html
             if (AsFullDocument)
             {
                 htmlWriter.WriteStartElement("html");
+                
+                WriteHead(htmlWriter);
+
                 htmlWriter.WriteStartElement("body");
             }
 
@@ -97,6 +108,18 @@ namespace Rtf2Html
             }
 
             return true;
+        }
+
+        private static void WriteHead(XmlTextWriter htmlWriter)
+        {
+            htmlWriter.WriteStartElement("head");
+            
+            htmlWriter.WriteStartElement("meta");
+            htmlWriter.WriteAttributeString("http-equiv", "Content-Type");
+            htmlWriter.WriteAttributeString("content", "text/html; charset=UTF-8");
+            htmlWriter.WriteEndElement();
+            
+            htmlWriter.WriteEndElement();
         }
 
         private void WriteFormattingProperties(XmlTextWriter htmlWriter, StringBuilder inlineStyle)
@@ -361,7 +384,10 @@ namespace Rtf2Html
                                 if (isIdentical)
                                     imageUri = identicalContent.Key;
                                 else
+                                {
+                                    imageUri = String.Concat(ContentUriPrefix, imageUri).Replace("/./", "/");
                                     _htmlResult.Content[imageUri] = image;
+                                }
                             }
                         }
 

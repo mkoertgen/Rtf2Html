@@ -21,10 +21,13 @@ namespace Rtf2Html
             var fileInfo = new FileInfo(fileName);
             foreach (var content in Content)
             {
-                // GetFullPath converts forard slashes, cf.:
+                // GetFullPath converts forward slashes, cf.:
                 // http://stackoverflow.com/questions/3144492/how-do-i-get-nets-path-combine-to-convert-forward-slashes-to-backslashes
-                var path = Path.GetFullPath(Path.Combine(fileInfo.DirectoryName, content.Key));
-                File.WriteAllBytes(path, content.Value);
+                var contentFileName = Path.GetFullPath(Path.Combine(fileInfo.DirectoryName, content.Key));
+                var contentPath = Path.GetDirectoryName(contentFileName);
+                if (!Directory.Exists(contentPath))
+                    Directory.CreateDirectory(contentPath);
+                File.WriteAllBytes(contentFileName, content.Value);
             }
         }
     }

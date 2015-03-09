@@ -1,12 +1,17 @@
 ﻿namespace Rtf2Html
 {
-    internal static class RtfToHtmlConverter
+    static class RtfToHtmlConverter
     {
-        public static HtmlResult RtfToHtml(string rtf, bool asFullDocument = true)
+        public static HtmlResult RtfToHtml(string rtf, string contentUriPrefix = null, bool asFullDocument = true)
         {
             var xamlStream = RtfToXamlConverter.RtfToXamlPackage(rtf);
-            using (var htmlConverter = new XamlToHtmlConverter(xamlStream, asFullDocument))
-                return htmlConverter.ConvertXamlToHtml();
+            var htmlConverter = new XamlToHtmlConverter
+            {
+                AsFullDocument = asFullDocument,
+                ContentUriPrefix = contentUriPrefix
+            };
+
+            return htmlConverter.ConvertXamlToHtml(xamlStream);
         }
     }
 }

@@ -7,9 +7,14 @@ namespace Rtf2Html
     {
         public static void Main(string[] args)
         {
-            var rtf = File.ReadAllText( GetArg(args, 0, "rtf2.rtf") );
-            var result = RtfToHtmlConverter.RtfToHtml(rtf);
-            result.WriteToFile(GetArg(args, 1, "rtf2.html"));
+            var rtfInput = GetArg(args, 0, "Document.rtf");
+            var htmlOutput = GetArg(args, 1, Path.ChangeExtension(rtfInput, ".html"));
+
+            var rtf = File.ReadAllText(rtfInput);
+
+            var contentUriPrefix = Path.GetFileNameWithoutExtension(htmlOutput);
+            var htmlResult = RtfToHtmlConverter.RtfToHtml(rtf, contentUriPrefix);
+            htmlResult.WriteToFile(htmlOutput);
         }
 
         private static string GetArg(IList<string> args, int index, string defaultValue)
