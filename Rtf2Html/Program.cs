@@ -8,10 +8,16 @@ namespace Rtf2Html
         public static void Main(string[] args)
         {
             var rtfInput = GetArg(args, 0, "Document.rtf");
-            var htmlOutput = GetArg(args, 1, Path.ChangeExtension(rtfInput, ".html"));
 
             var rtf = File.ReadAllText(rtfInput);
 
+            //var xaml = RtfXamlConverter.RtfToXaml(rtf);
+            //File.WriteAllText("xaml.xaml", xaml);
+
+            //var rtf2 = RtfXamlConverter.XamlToRtf(xaml);
+            //File.WriteAllText("rtf2.rtf", rtf2);
+
+            var htmlOutput = GetArg(args, 1, Path.ChangeExtension(rtfInput, ".html"));
             var contentUriPrefix = Path.GetFileNameWithoutExtension(htmlOutput);
             var htmlResult = RtfToHtmlConverter.RtfToHtml(rtf, contentUriPrefix);
             htmlResult.WriteToFile(htmlOutput);

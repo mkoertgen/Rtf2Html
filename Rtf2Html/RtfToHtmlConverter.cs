@@ -4,7 +4,7 @@
     {
         public static HtmlResult RtfToHtml(string rtf, string contentUriPrefix = null, bool asFullDocument = true)
         {
-            var xamlStream = RtfToXamlConverter.RtfToXamlPackage(rtf);
+            var xamlStream = RtfXamlConverter.RtfToXamlPackage(rtf);
             var htmlConverter = new XamlToHtmlConverter
             {
                 AsFullDocument = asFullDocument,
