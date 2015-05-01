@@ -5,3 +5,28 @@ Convert Rtf via Xaml to Html including images. The code is adapted from [Matthew
 2. Added support for processing the zipped `XamlPackage` stream including images. Requires [`ZipArchive`](https://msdn.microsoft.com/de-de/library/system.io.compression.ziparchive(v=vs.110).aspx) from `System.IO.Compression` in .NET 4.5    
 
 Simple conversion between `Rtf` and `Xaml` is also included by just exposing Microsofts internal implementations.
+
+## Examples
+
+### Rtf to Html (including image content):
+
+	var rtf = File.ReadAllText("doc.rtf");
+    var htmlResult = RtfToHtmlConverter.RtfToHtml(rtf, "doc");            htmlResult.WriteToFile("doc.html");
+
+### Rtf to Xaml (without content):
+
+	var rtf = File.ReadAllText("doc.rtf");
+	var xaml = RtfToXamlConverter.RtfToXaml(rtf);
+	File.WriteAllText("doc.xaml", xaml);
+
+### Rtf to Xaml package (zip with content)
+
+	var rtf = File.ReadAllText("doc.rtf");
+	using (var xamlStream = RtfToXamlConverter.RtfToXamlPackage(rtf))
+		File.WriteAllBytes("doc.xap", xamlStream.ToArray());
+
+### Rtf to plain text
+
+	var rtf = File.ReadAllText("doc.rtf");
+    var plainText = RtfToPlaintTextConverter.RtfToPlainText(rtf);
+	File.WriteAllText("doc.txt", plainText);

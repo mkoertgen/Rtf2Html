@@ -11,11 +11,14 @@ namespace Rtf2Html
 
             var rtf = File.ReadAllText(rtfInput);
 
-            //var xaml = RtfXamlConverter.RtfToXaml(rtf);
+            //var xaml = RtfToXamlConverter.RtfToXaml(rtf);
             //File.WriteAllText("xaml.xaml", xaml);
 
-            //var rtf2 = RtfXamlConverter.XamlToRtf(xaml);
+            //var rtf2 = RtfToXamlConverter.XamlToRtf(xaml);
             //File.WriteAllText("rtf2.rtf", rtf2);
+
+            //var plainText = RtfToPlaintTextConverter.RtfToPlainText(rtf);
+            //File.WriteAllText("text.txt", plainText);
 
             var htmlOutput = GetArg(args, 1, Path.ChangeExtension(rtfInput, ".html"));
             var contentUriPrefix = Path.GetFileNameWithoutExtension(htmlOutput);
