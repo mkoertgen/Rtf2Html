@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Rtf2Html
 {
-    static class Program
+    internal static class Program
     {
         public static void Main(string[] args)
         {

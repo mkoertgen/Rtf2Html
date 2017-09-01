@@ -5,12 +5,12 @@ using System.Windows;
 
 namespace Rtf2Html
 {
-    static class RtfToXamlConverter
+    internal static class RtfToXamlConverter
     {
         public static bool RtfContainsImage(string rtfText)
         {
             // cf.: http://www.biblioscape.com/rtf15_spec.htm#Heading49
-            return !String.IsNullOrWhiteSpace(rtfText) && rtfText.Contains(@"\pict");
+            return !string.IsNullOrWhiteSpace(rtfText) && rtfText.Contains(@"\pict");
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Rtf2Html
         /// <returns>A zipped stream containing a full xaml package; or null</returns>
         public static MemoryStream RtfToXamlPackage(string rtfContent)
         {
-            if (String.IsNullOrWhiteSpace(rtfContent)) return null;
+            if (string.IsNullOrWhiteSpace(rtfContent)) return null;
             return (MemoryStream)TextEditorCopyPaste_ConvertRtfToXaml
                 .Invoke(null, new object[] { rtfContent });
         }
@@ -30,7 +30,7 @@ namespace Rtf2Html
         /// </summary>
         public static string XamlToRtf(string xamlContent, Stream wpfContainerMemory = null)
         {
-            if (String.IsNullOrWhiteSpace(xamlContent)) return String.Empty;
+            if (string.IsNullOrWhiteSpace(xamlContent)) return string.Empty;
             return (string)TextEditorCopyPaste_ConvertXamlToRtf
                 .Invoke(null, new object[] { xamlContent, wpfContainerMemory });
         }
@@ -43,7 +43,7 @@ namespace Rtf2Html
         /// <remarks>Images and other content in the RTF are lost in the resulting Xaml content.</remarks>
         public static string RtfToXaml(string rtfContent)
         {
-            if (String.IsNullOrWhiteSpace(rtfContent)) return String.Empty;
+            if (string.IsNullOrWhiteSpace(rtfContent)) return string.Empty;
             return (string)XamlRtfConverterType_ConvertRtfToXaml
                 .Invoke(XamlRtfConverter, new object[] { rtfContent });
         }

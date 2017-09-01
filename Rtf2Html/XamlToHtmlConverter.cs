@@ -12,12 +12,12 @@ using System.Xml;
 
 namespace Rtf2Html
 {
-    class XamlToHtmlConverter
+    internal class XamlToHtmlConverter
     {
         private ZipArchive _zip;
         private XmlTextReader _xamlReader;
         private HtmlResult _htmlResult;
-        private string _contentUriPrefix = String.Empty;
+        private string _contentUriPrefix = string.Empty;
 
         public bool AsFullDocument { get; set; }
 
@@ -26,8 +26,8 @@ namespace Rtf2Html
             get { return _contentUriPrefix; }
             set
             {
-                _contentUriPrefix = value ?? String.Empty;
-                if (!String.IsNullOrWhiteSpace(_contentUriPrefix) && !_contentUriPrefix.EndsWith("/"))
+                _contentUriPrefix = value ?? string.Empty;
+                if (!string.IsNullOrWhiteSpace(_contentUriPrefix) && !_contentUriPrefix.EndsWith("/"))
                     _contentUriPrefix += "/";
             }
         }
@@ -65,10 +65,10 @@ namespace Rtf2Html
 
         private static string WrapIntoFlowDocument(string xamlString)
         {
-            if (String.IsNullOrWhiteSpace(xamlString)) return String.Empty;
+            if (string.IsNullOrWhiteSpace(xamlString)) return string.Empty;
             if (xamlString.StartsWith("<FlowDocument")) return xamlString;
             return
-                String.Concat(
+                string.Concat(
                     "<FlowDocument xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">",
                     xamlString,
                     "</FlowDocument>");
@@ -110,7 +110,7 @@ namespace Rtf2Html
             return true;
         }
 
-        private static void WriteHead(XmlTextWriter htmlWriter)
+        private static void WriteHead(XmlWriter htmlWriter)
         {
             htmlWriter.WriteStartElement("head");
             
@@ -122,7 +122,7 @@ namespace Rtf2Html
             htmlWriter.WriteEndElement();
         }
 
-        private void WriteFormattingProperties(XmlTextWriter htmlWriter, StringBuilder inlineStyle)
+        private void WriteFormattingProperties(XmlWriter htmlWriter, StringBuilder inlineStyle)
         {
             Debug.Assert(_xamlReader.NodeType == XmlNodeType.Element);
 
@@ -261,10 +261,9 @@ namespace Rtf2Html
         private static string ParseXamlThickness(string thickness)
         {
             var values = thickness.Split(',');
-            for (int i = 0; i < values.Length; i++)
+            for (var i = 0; i < values.Length; i++)
             {
-                double value;
-                if (double.TryParse(values[i], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value))
+                if (double.TryParse(values[i], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double value))
                     values[i] = Math.Ceiling(value).ToString(CultureInfo.InvariantCulture);
                 else
                     values[i] = "1";
@@ -298,12 +297,10 @@ namespace Rtf2Html
 
             if (_xamlReader.IsEmptyElement)
             {
-                if (htmlWriter != null && inlineStyle.Length > 0)
-                {
-                    // Output STYLE attribute and clear inlineStyle buffer.
-                    htmlWriter.WriteAttributeString("style", inlineStyle.ToString());
-                    inlineStyle.Remove(0, inlineStyle.Length);
-                }
+                if (htmlWriter == null || inlineStyle.Length <= 0) return;
+                // Output STYLE attribute and clear inlineStyle buffer.
+                htmlWriter.WriteAttributeString("style", inlineStyle.ToString());
+                inlineStyle.Remove(0, inlineStyle.Length);
             }
             else
             {
@@ -360,7 +357,7 @@ namespace Rtf2Html
             }
         }
 
-        private void AddComplexProperty(XmlTextWriter htmlWriter, StringBuilder inlineStyle)
+        private void AddComplexProperty(XmlWriter htmlWriter, StringBuilder inlineStyle)
         {
             Debug.Assert(_xamlReader.NodeType == XmlNodeType.Element);
 
@@ -369,12 +366,12 @@ namespace Rtf2Html
                 if (ReadNextToken() && _xamlReader.Name == "BitmapImage")
                 {
                     var imageUri = _xamlReader.GetAttribute("UriSource");
-                    if (!String.IsNullOrWhiteSpace(imageUri))
+                    if (!string.IsNullOrWhiteSpace(imageUri))
                     {
                         // check new image
                         if (!_htmlResult.Content.ContainsKey(imageUri))
                         {
-                            var entryPath = String.Concat("Xaml/", imageUri).Replace("/./", "/");
+                            var entryPath = string.Concat("Xaml/", imageUri).Replace("/./", "/");
                             var imageEntry = _zip.GetEntry(entryPath);
                             using (var stream = imageEntry.Open())
                             {
@@ -385,7 +382,7 @@ namespace Rtf2Html
                                     imageUri = identicalContent.Key;
                                 else
                                 {
-                                    imageUri = String.Concat(ContentUriPrefix, imageUri).Replace("/./", "/");
+                                    imageUri = string.Concat(ContentUriPrefix, imageUri).Replace("/./", "/");
                                     _htmlResult.Content[imageUri] = image;
                                 }
                             }

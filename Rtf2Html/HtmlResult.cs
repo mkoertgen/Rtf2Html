@@ -1,17 +1,16 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Rtf2Html
 {
-    class HtmlResult
+    internal class HtmlResult
     {
         public string Html { get; set; }
-        public Dictionary<string, byte[]> Content { get; private set; }
+        public Dictionary<string, byte[]> Content { get; }
 
         public HtmlResult()
         {
-            Html = String.Empty;
+            Html = string.Empty;
             Content = new Dictionary<string, byte[]>();
         }
 
@@ -26,6 +25,7 @@ namespace Rtf2Html
                 var contentFileName = Path.GetFullPath(Path.Combine(fileInfo.DirectoryName, content.Key));
                 var contentPath = Path.GetDirectoryName(contentFileName);
                 if (!Directory.Exists(contentPath))
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     Directory.CreateDirectory(contentPath);
                 File.WriteAllBytes(contentFileName, content.Value);
             }
