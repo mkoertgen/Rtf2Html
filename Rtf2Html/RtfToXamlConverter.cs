@@ -49,17 +49,17 @@ namespace Rtf2Html
         }
 
         private static readonly Assembly PresentationFrameworkAssembly = Assembly.GetAssembly(typeof(FrameworkElement));
-        private static readonly Type TextEditorCopyPastType = PresentationFrameworkAssembly
+        private static readonly Type TextEditorCopyPasteType = PresentationFrameworkAssembly
             .GetType("System.Windows.Documents.TextEditorCopyPaste");
 
         private static readonly Type XamlRtfConverterType = PresentationFrameworkAssembly
             .GetType("System.Windows.Documents.XamlRtfConverter");
 
         // ReSharper disable InconsistentNaming
-        private static readonly MethodInfo TextEditorCopyPaste_ConvertRtfToXaml = TextEditorCopyPastType
+        private static readonly MethodInfo TextEditorCopyPaste_ConvertRtfToXaml = TextEditorCopyPasteType
             .GetMethod("ConvertRtfToXaml", BindingFlags.Static | BindingFlags.NonPublic);
 
-        private static readonly MethodInfo TextEditorCopyPaste_ConvertXamlToRtf = TextEditorCopyPastType
+        private static readonly MethodInfo TextEditorCopyPaste_ConvertXamlToRtf = TextEditorCopyPasteType
             .GetMethod("ConvertXamlToRtf", BindingFlags.Static | BindingFlags.NonPublic);
 
         private static readonly MethodInfo XamlRtfConverterType_ConvertRtfToXaml = XamlRtfConverterType
